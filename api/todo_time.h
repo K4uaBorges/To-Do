@@ -25,20 +25,19 @@ void free_time(Time *time);
 Time *malloc_time(void);
 
 // Function to create a new time
-Time *create_time(unsigned int year, unsigned int month, unsigned int day,
-                  unsigned int hour, unsigned int minute, unsigned int second);
+Time *create_time(void);
 
 // Function to update a time's information
-void update_time(Time *time, unsigned int year, unsigned int month, unsigned int day,
+void update_time(Time *dst, unsigned int year, unsigned int month, unsigned int day,
                  unsigned int hour, unsigned int minute, unsigned int second);
 
 // Function to remove a time
-void remove_time(Time *time);
+void remove_time(Time *dst);
 
 // Function to get the current time
-void current_time(Time *time);
+void current_time(Time *dst);
 
 // Function important to get in real time for work.c
-Time *new_current_time();
+Time *new_current_time(void);
 
 #endif

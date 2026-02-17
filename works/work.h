@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
 #include "../api/todo_time.h"
 
 typedef enum
@@ -16,27 +17,37 @@ typedef enum
 typedef struct works
 {
     int id;
-    char *name;
-    char *description;
+    const char *name;
+    const char *description;
     Time *time_init;
-    Time *time_end;
+    const Time *time_end;
     Type type;
 } Work;
 
 typedef struct work_node
 {
     Work *data;
-    struct Node *next;
+    struct work_node *next;
 } Node;
 
-// criteria: 0 for id, 1 for name, 2 for time_init, 4 for time_end, 5 for type
-int criteria(char *ording);
+// Nodes helping for search, sort, and become a system more fast and efective
+Node *create_node(Work *work);
+void insert_node(Node *head, Work *data);
+void append_node(Node *head, Work *data);
+void *ordered_Work(Work *data, Node *head,
+                   bool (*compare)(const Work *, const Work *, int), int criteria);
+void remove_node(Node *head, int id);
+
+// criteria: 0 for id, 1 for name, 2 for time_init, 3 for time_end, 4 for description, 5 for type
+int criteria(const char *type);
 
 // Function to create a new work
-Work *create_work(int id, const char *name, const char *description, const Time *time_end, Type type);
+Work *create_work(int id, const char *name, const char *description,
+                  const Time *time_end, Type type);
 
 // Update a work's information
-void update_work(Work *work, const char *name, const char *description, const Time *time_init, const Time *time_end, Type type);
+void update_work(Work *work, const char *name, const char *description,
+                 const Time *time_init, const Time *time_end, Type type);
 
 // Function to remove a work from the list
 Work *remove_work(Work *work);
@@ -47,18 +58,7 @@ Work *get_all_works();
 
 // Function to print a work or Node information
 void print_work(Work *work);
-void print_node
-
-    // Function to compare two works, if work1 is greater or equal to than work2, return true, otherwise return false
-    bool compare_works(const Work *work1, const Work *work2, int criteria);
-
-// Nodes helping for search, sort, and become a system more fast and efective
-Node *create_node(Work *work);
-void insert_node(Node *head, Work *data);
-void append_node(Node *head, Work *data);
-void *ordered_Work(Work *data, Node *head, bool (*compare)(const Work *, const Work *, int), int criteria);
-void remove_node(Node *head, int id);
-Node *nodeAll(Node *head);
+void print_node(Node data);
 
 // function to free or allocate memory for work
 void free_work(Work *work);
@@ -70,10 +70,13 @@ void malloc_node(Node *node);
 // Functions to search and sort works
 Node *search_work(Node *head, int criteria, Work *value);
 void change_node(Node *head, int id, Work *new_work);
-void merge_sort(int *arr, int left, int right, int criteria);
+void merge_sort(Work **arr, int left, int right, int criteria);
 
-// Fuction to Write and Read the works in a file
+// Function to Write and Read the works in a file
 void write_works_to_file(const char *filename, Node *head);
 Node *read_works_from_file(const char *filename);
 
+// Funcion to used for merge sort, compare and search
+bool compare_works(const Work *work1, const Work *work2, int criteria);
+void merge_sort(Work **arr, int left, int right, int criteria);
 #endif

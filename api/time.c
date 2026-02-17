@@ -11,20 +11,20 @@ void free_time(Time *time)
     }
     else
     {
-        fprintf(stderr, "There aren't time");
+        printf("There aren't time");
     }
-};
+}
 
 Time *malloc_time(void)
 {
-    Time *time = (Time *)malloc(sizeof(Time));
+    Time *time = malloc(sizeof(Time));
     if (time == NULL)
     {
-        fprintf(stderr, "Failed to allocate memory for Time\n");
+        printf("Failed to allocate memory for Time\n");
         return NULL;
     }
     return time;
-};
+}
 
 Time *create_time(void)
 {
@@ -33,14 +33,14 @@ Time *create_time(void)
         return NULL;
 
     return time;
-};
+}
 
 void update_time(Time *dst, unsigned int year, unsigned int month, unsigned int day,
                  unsigned int hour, unsigned int minute, unsigned int second)
 {
-    if (time == NULL)
+    if (dst == NULL)
     {
-        fprintf(stderr, "Failed in update, this date not exist, try create");
+        printf("Failed in update, this date not exist, try create");
         return;
     }
 
@@ -50,18 +50,18 @@ void update_time(Time *dst, unsigned int year, unsigned int month, unsigned int 
     dst->hour = hour;
     dst->minute = minute;
     dst->second = second;
-};
+}
 
 void remove_time(Time *dst)
 {
     free_time(dst);
-};
+}
 
 void current_time(Time *dst)
 {
     if (dst == NULL)
     {
-        fprintf(stderr, "Destination Time is NULL\n");
+        printf("Destination Time is NULL\n");
         return;
     }
 
