@@ -2,6 +2,7 @@
 
 static int help_selected(const char *selected);
 static void to_uppercase_inplace(char *text);
+static int refresh_ids_and_size(Node *head);
 
 int criteria(const char *type)
 {
@@ -57,8 +58,42 @@ static void to_uppercase_inplace(char *text)
     }
 }
 
+static int refresh_ids_and_size(Node *head)
+{
+    int id = 1;
+    Node *current = head;
+
+    while (current != NULL)
+    {
+        if (current->data != NULL)
+        {
+            current->data->id = id;
+        }
+        current = current->next;
+        id++;
+    }
+
+    int size = id - 1;
+    current = head;
+    while (current != NULL)
+    {
+        current->size = size;
+        current = current->next;
+    }
+
+    return size;
+}
+
 Node *create_node(Work *data)
 {
+    const int number_node = 1;
+
+    if (data == NULL)
+    {
+        printf("Cannot create a node with null data");
+        return NULL;
+    }
+
     Node *new_node = malloc(sizeof(Node));
 
     if (new_node == NULL)
@@ -69,6 +104,8 @@ Node *create_node(Work *data)
 
     new_node->data = data;
     new_node->next = NULL;
+    new_node->data->id = number_node;
+    new_node->size = number_node;
 
     return new_node;
 }
@@ -76,7 +113,7 @@ Node *create_node(Work *data)
 // Insert a new node after head
 void insert_node(Node *head, Work *data)
 {
-    if (head == NULL || head->data == NULL)
+    if (head == NULL || data == NULL)
     {
         printf("Cannot adding a new node without create a new one");
         return;
@@ -92,13 +129,17 @@ void insert_node(Node *head, Work *data)
 
     new_node->data = data;
     new_node->next = head->next;
+    new_node->size = 0;
     head->next = new_node;
+
+    head->size = refresh_ids_and_size(head);
+    new_node->size = head->size;
 }
 
 // Insert a new node in final
 void append_node(Node *head, Work *data)
 {
-    if (head == NULL || head->data == NULL)
+    if (head == NULL || head->data == NULL || data == NULL)
     {
         printf("Cannot adding a new node without create a new one");
         return;
@@ -114,6 +155,7 @@ void append_node(Node *head, Work *data)
 
     new_node->data = data;
     new_node->next = NULL;
+    new_node->size = 0;
 
     Node *current = head;
     while (current->next != NULL)
@@ -121,14 +163,74 @@ void append_node(Node *head, Work *data)
         current = current->next;
     }
     current->next = new_node;
-};
-
-void *ordered_Work(Work *data, Node *head,
-                   bool (*compare)(const Work *, const Work *, int), int criteria)
-{
+    head->size = refresh_ids_and_size(head);
+    new_node->size = head->size;
 }
 
-Work *create_work(int id, const char *name, const char *description,
+void ording_node(Node *head, int criteria)
+{
+    if (head == NULL || criteria < 0 || criteria > 5)
+    {
+        printf("There aren't work for ording");
+        return;
+    }
+
+    if (head->size > 1)
+    {
+        merge_sort(head, 0, head->size - 1, criteria);
+    }
+    head->size = refresh_ids_and_size(head);
+}
+
+void remove_node(Node *head, int id)
+{
+    if (head == NULL || head->data == NULL)
+    {
+        printf("There aren't node, try create and remove after");
+        return;
+    }
+
+    if (id <= 0)
+    {
+        printf("Invalid id");
+        return;
+    }
+
+    if (head->data->id == id)
+    {
+        if (head->next == NULL)
+        {
+            printf("Cannot remove the only node in list");
+            return;
+        }
+
+        head->data = head->next->data;
+        head->next = head->next->next;
+        free_node(head->next);
+        free_work(head->data);
+        head->size = refresh_ids_and_size(head);
+        return;
+    }
+
+    Node *prev = head;
+    Node *current = head->next;
+
+    while (current != NULL)
+    {
+        if (current->data != NULL && current->data->id == id)
+        {
+            prev->next = current->next;
+            free_node(current);
+            free_work(current->data);
+            head->size = refresh_ids_and_size(head);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
+}
+
+Work *create_work(const char *name, const char *description,
                   const Time *time_end, Type type)
 {
     Work *work = malloc(sizeof(Work));
@@ -139,7 +241,7 @@ Work *create_work(int id, const char *name, const char *description,
         return NULL;
     }
 
-    work->id = id;
+    work->id = 0;
     work->name = name;
     work->description = description;
     work->time_init = new_current_time();

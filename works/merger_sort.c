@@ -5,7 +5,7 @@ static int compare_id(int a, int b);
 static int compare_string(const char *a, const char *b);
 static int compare_time(const Time *a, const Time *b);
 static int compare_work_values(const Work *work1, const Work *work2, int criteria);
-static void merge(Work **arr, int left, int mid, int right, int criteria);
+static void merge(Node *arr, int left, int mid, int right, int criteria);
 
 static int compare_int(int a, int b)
 {
@@ -121,7 +121,7 @@ bool compare_works(const Work *work1, const Work *work2, int criteria)
     return compare_work_values(work1, work2, criteria) >= 0;
 };
 
-static void merge(Work **arr, int left, int mid, int right, int criteria)
+static void merge(Node *arr, int left, int mid, int right, int criteria)
 {
     int i = 0;
     int j = 0;
@@ -129,8 +129,8 @@ static void merge(Work **arr, int left, int mid, int right, int criteria)
     int n1 = mid - left + 1;
     int n2 = right - mid;
 
-    Work **left_arr = malloc((size_t)n1 * sizeof(Work *));
-    Work **right_arr = malloc((size_t)n2 * sizeof(Work *));
+    Node *left_arr = malloc((size_t)n1 * sizeof(Node *));
+    Node *right_arr = malloc((size_t)n2 * sizeof(Node *));
 
     if (left_arr == NULL || right_arr == NULL)
     {
@@ -153,7 +153,7 @@ static void merge(Work **arr, int left, int mid, int right, int criteria)
     j = 0;
     while (i < n1 && j < n2)
     {
-        if (compare_work_values(left_arr[i], right_arr[j], criteria) <= 0)
+        if (compare_work_values(left_arr->data, right_arr->data, criteria) <= 0)
         {
             arr[k] = left_arr[i];
             i++;
@@ -184,7 +184,7 @@ static void merge(Work **arr, int left, int mid, int right, int criteria)
     free(right_arr);
 };
 
-void merge_sort(Work **arr, int left, int right, int criteria)
+void merge_sort(Node *arr, int left, int right, int criteria)
 {
     if (arr == NULL || left < 0 || right < 0 || left >= right)
     {
